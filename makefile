@@ -1,11 +1,30 @@
-DIRS = src include build
-objects = build/main.o
+SRC_DIR := src
+OBJ_DIR := obj
+BUILD_DIR := build
 
-CSnake : $(objects)
-	cc -o CSnake $(objects) -lncurses
+EXE := $(BUILD_DIR)/CSnake
+SRC := $(wildcard $(SRC_DIR)/*.c)
+OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-build/main.o : 
-	cc -c src/main.c -o build/main.o
+CPPFLAGS := -Iinclude -MMD -MP
+CFLAGS   := -Wall
+LDFLAGS  := -Llib
+LDLIBS   := -lm
 
-clean : 
-	rm CSnake $(objects)
+.PHONY: all clean
+
+all: $(EXE)
+
+$(EXE): $(OBJ) | $(BUILD_DIR)
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -lncurses -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+$(BUILD_DIR) $(OBJ_DIR):
+	mkdir -p $@
+
+clean:
+	@$(RM) -rv $(BUILD_DIR) $(OBJ_DIR)
+
+-include $(OBJ:.o=.d)
