@@ -1,27 +1,23 @@
-#include "Snake.h"
+#include "Playground.h"
 
 int main() {
-	Snake *snake;
+	initscr();
+	start_color();
+	refresh();
+	noecho();
+
 	Coordinate start = { .row = 5, .col = 5};
 	int len = 5;
-	
-	snake = initSnake(start, len);
 
-	initscr();
-	refresh();
-
-	WINDOW *playground;
-	playground = newwin(20, 20, 0, 0);
+	Playground *playground;
+	playground = initPlayground(20, 40, start, len);
 	if(playground == NULL) {
 		endwin();
-		puts("Unable to create playground window");
+		puts("Unable to initiate playground");
 		return 1;
 	}
 
-	wdrawSnake(playground, snake);
-
-	wrefresh(playground);
-	getch();
+	playground->runGame(playground);
 
 	endwin();
 	return 0;
