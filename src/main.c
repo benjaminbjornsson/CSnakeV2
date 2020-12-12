@@ -10,7 +10,7 @@ int main() {
 	int len = 5;
 
 	Playground *playground;
-	playground = initPlayground(12, 24, start, len);
+	playground = initPlayground(24, 24, start, len);
 	if(playground == NULL) {
 		endwin();
 		puts("Unable to initiate playground");

@@ -27,7 +27,10 @@ void wdrawSnake(WINDOW *playground, const Snake *snake) {
 	SnakeBody *stepper;
 	stepper = snake->head;
 	do {
-		mvwaddch(playground, stepper->position.row, stepper->position.col, 'x');
+		if(stepper == snake->head)
+			mvwaddch(playground, stepper->position.row, stepper->position.col, 'O');
+		else
+			mvwaddch(playground, stepper->position.row, stepper->position.col, 'o');
 		stepper = stepper->next;
 	} while(stepper != NULL);
 }
@@ -79,15 +82,39 @@ void deleteTail(Snake *snake) {
 	stepper->next = NULL;
 }
 
-void stepSnake(Snake *snake, _Bool ateApple, int maxrows, int maxcolumns) {
+bool intersectSelf(const Snake *snake) {
+	SnakeBody *stepper;
+	stepper = snake->head;
+	while(stepper->next) {
+		stepper = stepper->next;
+		if(coordinateCompair(stepper->position, snake->head->position))
+			return true;
+	}
+	return false;
+}
+
+bool stepSnake(Snake *snake, bool ateApple, int maxrows, int maxcolumns) {
 	SnakeBody *newHead;
 	newHead = (SnakeBody *)malloc(sizeof(SnakeBody));
 	newHead->position = nextCoordinate(snake, maxrows, maxcolumns);
 	newHead->next = snake->head;
 	snake->head = newHead;
 	snake->prev_direction = snake->direction;
-	if(ateApple)
-		return;
-	else
+	if(!ateApple)
 		deleteTail(snake);
+	if(intersectSelf(snake))
+		return false;
+	else
+		return true;
+}
+
+bool intersectSnake(Snake *snake, Coordinate position) {
+	SnakeBody *stepper;
+	stepper = snake->head;
+	do {
+		if(coordinateCompair(position, stepper->position))
+			return true;
+		stepper = stepper->next;
+	} while(stepper != NULL);
+	return false;
 }

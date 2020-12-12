@@ -1,5 +1,6 @@
 #include "Snake.h"
 #include "Apple.h"
+#include "Wall.h"
 #include "utils.h"
 
 typedef struct Playground Playground;
@@ -10,6 +11,7 @@ struct Playground {
 	WINDOW *win;
 	Snake *snake;
 	Apple *apple;
+	Wall *wall;
 	int (* runGame)(Playground *);
 };
 

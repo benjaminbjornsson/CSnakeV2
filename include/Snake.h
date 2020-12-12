@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "utils.h"
 
 typedef enum Direction Direction;
@@ -21,10 +22,12 @@ struct SnakeBody {
 struct Snake {
 	Direction prev_direction, direction;
 	SnakeBody *head;
+/*	bool (* intersectSnake)(Snake *, Coordinate);*/
 };
 
 Snake *initSnake(Coordinate, int);
 void wdrawSnake(WINDOW *, const Snake *);
 void updateSnakeDirection(Snake *, int);
-void stepSnake(Snake *, _Bool, int, int);
+bool stepSnake(Snake *, bool, int, int);
 Coordinate nextCoordinate(const Snake *, const int, const int);
+bool intersectSnake(Snake *, Coordinate);

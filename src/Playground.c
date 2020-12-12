@@ -1,18 +1,37 @@
-#include "Playground.h"
-
+#include "Playground.h" 
+		
 Playground *initPlayground(int rows, int columns, Coordinate start, int len) {
 	Playground *temp;
 	temp = (Playground *)malloc(sizeof(Playground));
 
 	temp->rows = rows;
-	temp->columns = columns;
+	temp->columns = 2 * columns;
 
-	temp->win = newwin(rows, columns, 0, 0);
+	temp->win = newwin(rows, temp->columns, 0, 0);
 	if(temp->win == NULL)
 		return NULL;
+	init_pair(1, COLOR_WHITE, COLOR_BLUE);
+	wbkgd(temp->win, COLOR_PAIR(1));
 
 	temp->snake = initSnake(start, len);
 	temp->apple = NULL;
+
+/*	----------------------------------	*/
+	Coordinate **coordinates;
+	coordinates = (Coordinate **)malloc(5*sizeof(Coordinate *));
+
+	int i;
+	for(i = 0; i < 4; i++) {
+		coordinates[i] = (Coordinate *)malloc(sizeof(Coordinate));
+		coordinates[i]->row = 0;
+		coordinates[i]->col = 2 * i;
+	}
+	coordinates[3]->row = 16;
+	coordinates[4] = NULL;
+	
+	temp->wall = (Wall *)malloc(sizeof(Wall));
+	temp->wall->coordinates = coordinates;
+/*	----------------------------------	*/
 
 	temp->runGame = runGame;
 	nodelay(temp->win, TRUE);
@@ -34,7 +53,10 @@ void wdrawApple(WINDOW *window, Apple *apple) {
 
 void stepApple(Playground *playground) {
 	if(playground->apple == NULL) {
-		playground->apple = newApple(playground->rows, playground->columns);
+		do {
+			free(playground->apple);
+			playground->apple = newApple(playground->rows, playground->columns);
+		} while(intersectSnake(playground->snake, playground->apple->position) || intersectWall(playground->wall, playground->apple->position));
 		return;
 	} else {
 		if(playground->apple->timeLeft == 0) {
@@ -48,13 +70,13 @@ void stepApple(Playground *playground) {
 	}
 }
 
-_Bool ateApple(Playground *playground) {
+bool ateApple(Playground *playground) {
 	Coordinate next;
-	_Bool ateApple;
+	bool ateApple;
 	if(playground->apple == NULL)
 		return FALSE;
 	next = nextCoordinate(playground->snake, playground->rows, playground->columns);
-	ateApple = (next.row == playground->apple->position.row) && (next.col == playground->apple->position.col);
+	ateApple = coordinateCompair(next, playground->apple->position);
 	if(ateApple) {
 		free(playground->apple);
 		playground->apple = NULL;
@@ -65,13 +87,15 @@ _Bool ateApple(Playground *playground) {
 int runGame(Playground *playground) {
 	int ch = 0, i = 0;
     while(ch != ' ') {
-        stepSnake(playground->snake, ateApple(playground), playground->rows, playground->columns);
-		stepApple(playground);
-        wdrawSnake(playground->win, playground->snake);
-		wdrawApple(playground->win, playground->apple);
-        wrefresh(playground->win);
         wclear(playground->win);
-        napms(500);
+        if(!stepSnake(playground->snake, ateApple(playground), playground->rows, playground->columns) || intersectWall(playground->wall, playground->snake->head->position))
+			break;
+		stepApple(playground);
+		wdrawApple(playground->win, playground->apple);
+        wdrawSnake(playground->win, playground->snake);
+		wdrawWall(playground->win, playground->wall);
+        wrefresh(playground->win);
+        napms(250);
         ch = getLastKey(playground);
         updateSnakeDirection(playground->snake, ch);
 		i++;
