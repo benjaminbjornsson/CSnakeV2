@@ -1,12 +1,15 @@
 #include "Snake.h"
+#include "Apple.h"
+#include "utils.h"
 
 typedef struct Playground Playground;
 
 struct Playground {
 	int rows;
-	int cols;
+	int columns;
 	WINDOW *win;
 	Snake *snake;
+	Apple *apple;
 	int (* runGame)(Playground *);
 };
 

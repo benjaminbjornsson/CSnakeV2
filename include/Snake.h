@@ -1,8 +1,8 @@
 #include <ncurses.h>
 #include <stdlib.h>
+#include "utils.h"
 
 typedef enum Direction Direction;
-typedef struct Coordinate Coordinate; 
 typedef struct SnakeBody SnakeBody;
 typedef struct Snake Snake;
 
@@ -11,11 +11,6 @@ enum Direction {
 	down = 'j', 
 	up = 'k', 
 	right = 'l'
-};
-
-struct Coordinate {
-	int row;
-	int col;
 };
 
 struct SnakeBody {
@@ -30,5 +25,6 @@ struct Snake {
 
 Snake *initSnake(Coordinate, int);
 void wdrawSnake(WINDOW *, const Snake *);
-void stepSnake(Snake *, _Bool, int, int);
 void updateSnakeDirection(Snake *, int);
+void stepSnake(Snake *, _Bool, int, int);
+Coordinate nextCoordinate(const Snake *, const int, const int);

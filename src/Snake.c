@@ -15,7 +15,7 @@ Snake *initSnake(Coordinate start, int len) {
 	for(i = 1; i < len; i++) {
 		stepper->next = (SnakeBody *)malloc(sizeof(SnakeBody));
 		stepper = stepper->next;
-		stepper->position.row = 5;
+		stepper->position.row = start.row;
 		stepper->position.col = start.col - 2 * i;
 	}
 	stepper = NULL;
@@ -32,7 +32,7 @@ void wdrawSnake(WINDOW *playground, const Snake *snake) {
 	} while(stepper != NULL);
 }
 
-Coordinate nextCoordinate(Snake *snake, int maxrow, int maxcol) {
+Coordinate nextCoordinate(const Snake *snake, const int maxrow, const int maxcol) {
 	Coordinate temp;
 	temp = snake->head->position;
 	switch(snake->direction) {
@@ -79,10 +79,10 @@ void deleteTail(Snake *snake) {
 	stepper->next = NULL;
 }
 
-void stepSnake(Snake *snake, _Bool ateApple, int maxrow, int maxcol) {
+void stepSnake(Snake *snake, _Bool ateApple, int maxrows, int maxcolumns) {
 	SnakeBody *newHead;
 	newHead = (SnakeBody *)malloc(sizeof(SnakeBody));
-	newHead->position = nextCoordinate(snake, maxrow, maxcol);
+	newHead->position = nextCoordinate(snake, maxrows, maxcolumns);
 	newHead->next = snake->head;
 	snake->head = newHead;
 	snake->prev_direction = snake->direction;

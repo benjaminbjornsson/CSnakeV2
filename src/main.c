@@ -6,17 +6,16 @@ int main() {
 	refresh();
 	noecho();
 
-	Coordinate start = { .row = 5, .col = 5};
+	Coordinate start = { .row = 6, .col = 6};
 	int len = 5;
 
 	Playground *playground;
-	playground = initPlayground(20, 40, start, len);
+	playground = initPlayground(12, 24, start, len);
 	if(playground == NULL) {
 		endwin();
 		puts("Unable to initiate playground");
 		return 1;
 	}
-
 	playground->runGame(playground);
 
 	endwin();
