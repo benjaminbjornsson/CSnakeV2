@@ -7,6 +7,7 @@ Playground *initPlayground(WINDOW *window, Coordinate start, int len) {
 	temp->win = window;
 	temp->snake = initSnake(start, len);
 	temp->apple = NULL;
+	temp->score = 0;
 
 /*	----------------------------------	*/
 	Coordinate **coordinates;
@@ -25,16 +26,9 @@ Playground *initPlayground(WINDOW *window, Coordinate start, int len) {
 	temp->wall->coordinates = coordinates;
 /*	----------------------------------	*/
 
-	temp->runGame = runGame;
+	temp->stepGame = stepGame;
 	nodelay(temp->win, TRUE);
 	return temp;
-}
-
-int getLastKey(Playground *playground) {
-	int ch, last = '\0';
- 	while((ch = wgetch(playground->win)) != ERR)
-		last = ch;
-	return last;
 }
 
 void wdrawApple(WINDOW *window, Apple *apple) {
@@ -70,27 +64,23 @@ bool ateApple(Playground *playground) {
 	next = nextCoordinate(playground->snake, playground->rows, playground->columns);
 	ateApple = coordinateCompair(next, playground->apple->position);
 	if(ateApple) {
+		playground->score++;
 		free(playground->apple);
 		playground->apple = NULL;
 	}
 	return ateApple;
 }
 
-int runGame(Playground *playground) {
-	int ch = 0, i = 0;
-    while(ch != ' ') {
-        wclear(playground->win);
-        if(!stepSnake(playground->snake, ateApple(playground), playground->rows, playground->columns) || intersectWall(playground->wall, playground->snake->head->position))
-			break;
-		stepApple(playground);
-		wdrawApple(playground->win, playground->apple);
-        wdrawSnake(playground->win, playground->snake);
-		wdrawWall(playground->win, playground->wall);
-        wrefresh(playground->win);
-        napms(250);
-        ch = getLastKey(playground);
-        updateSnakeDirection(playground->snake, ch);
-		i++;
-    }
-	return i;
+int stepGame(Playground *playground, int nextKey) {
+	updateSnakeDirection(playground->snake, nextKey);
+	wclear(playground->win);
+	if(!stepSnake(playground->snake, ateApple(playground), playground->rows, playground->columns) || intersectWall(playground->wall, playground->snake->head->position))
+		return -1;
+	stepApple(playground);
+	wdrawApple(playground->win, playground->apple);
+	wdrawSnake(playground->win, playground->snake);
+	wdrawWall(playground->win, playground->wall);
+	wrefresh(playground->win);
+	napms(250);
+	return playground->score;
 }

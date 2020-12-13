@@ -1,5 +1,9 @@
 #include "utils.h"
 
+#define UPPERHEIGHT	3
+#define LOWERHEIGHT	3
+#define BORDERWIDTH	2
+
 Range initRange(int start, int end) {
 	Range temp = { .start = start, .end = end };
 	return temp;
@@ -19,6 +23,13 @@ bool inRange(Range range, int n) {
 
 bool coordinateCompair(Coordinate coordinate1, Coordinate coordinate2) {
 	return (coordinate1.row == coordinate2.row) && (coordinate1.col == coordinate2.col);
+}
+
+int getLastKey(WINDOW *window) {
+	int ch, last = '\0';
+ 	while((ch = wgetch(window)) != ERR)
+		last = ch;
+	return last;
 }
 
 void wshadowBorder(WINDOW *window, short color1, short color2) {
@@ -53,46 +64,60 @@ void wshadowBorder(WINDOW *window, short color1, short color2) {
 	waddch(window, ACS_LRCORNER | color2);
 }
 
-WINDOW *initPlaygroundWindow(int rows, int columns, Coordinate position) {
-	WINDOW *mainWindow, *centerWindow, *playgroundWindow, *titleWindow, *scoreWindow, *shadowWindow;
-
-	mainWindow = newwin(rows, columns, position.row, position.col);
-	centerWindow = derwin(mainWindow, rows - 8, columns - 2, 4, 1);
-	playgroundWindow = derwin(centerWindow, rows - 10, columns - 4, 1, 1);
-	titleWindow = derwin(mainWindow, 3, 20, 1, (columns - 2 - 20) / 2);
-	scoreWindow = derwin(mainWindow, 3, columns - 2, rows - 4, 1);
-	shadowWindow = newwin(rows, columns, position.row + 2, position.col + 4);
+void initWindows(WINDOW **lower, WINDOW **center, WINDOW **upper, int rows, int columns, Coordinate position) {
+	WINDOW *mainWindow, *lowerWindow, *centerWindow, *upperWindow, *lowerContentWindow, *centerContentWindow, *upperContentWindow, *shadowWindow;
 
 	init_color(COLOR_GREY, 500, 500, 500);
-
+	init_color(COLOR_LIGHTGREY, 800, 800, 800);
 	init_pair(1, COLOR_BLACK, COLOR_BLUE);
 	init_pair(2, COLOR_BLACK, COLOR_GREY);
 	init_pair(3, COLOR_BLACK, COLOR_BLACK);
 	init_pair(4, COLOR_WHITE, COLOR_GREY);
-	
+	init_pair(5, COLOR_BLACK, COLOR_GREEN);
+	init_pair(6, COLOR_LIGHTGREY, COLOR_GREY);
+
+
+	mainWindow = newwin(rows, columns, position.row, position.col);
+	shadowWindow = newwin(rows, columns, position.row + 1, position.col + 2);
+
+	lowerWindow = derwin(mainWindow, LOWERHEIGHT, columns - BORDERWIDTH, rows - 2 * BORDERWIDTH, 1);
+	centerWindow = derwin(mainWindow, rows - UPPERHEIGHT - LOWERHEIGHT - BORDERWIDTH, columns - BORDERWIDTH, 1 + UPPERHEIGHT, 1);
+	upperWindow = derwin(mainWindow, UPPERHEIGHT, 20, 1, (columns - BORDERWIDTH - 20) / 2);
+
+	lowerContentWindow = derwin(lowerWindow, LOWERHEIGHT - BORDERWIDTH, columns - 2 * BORDERWIDTH, 1, 1);
+	centerContentWindow = derwin(centerWindow, rows - UPPERHEIGHT - LOWERHEIGHT - 2 * BORDERWIDTH, columns - 2 * BORDERWIDTH, 1, 1);
+	upperContentWindow = derwin(upperWindow, UPPERHEIGHT - BORDERWIDTH, 20 - BORDERWIDTH, 1, 1);
+
 	bkgd(COLOR_PAIR(1));
 	wbkgd(mainWindow, COLOR_PAIR(2));
 	wbkgd(shadowWindow, COLOR_PAIR(3));
-	wbkgd(titleWindow, COLOR_PAIR(2));
-	wbkgd(scoreWindow, COLOR_PAIR(2));
-	
-	char title[] = "CSnake";
-	mvwaddstr(titleWindow, 1, (18 - strlen(title)) / 2, title);
 
-	mvwprintw(scoreWindow, 1, 1, "Highscore: %2d", 15);
-	mvwprintw(scoreWindow, 1, (columns - 9 - 2) / 2, "Score: %d", 5);
-	mvwprintw(scoreWindow, 1, (columns - 2 - 8), "Level %d", 3);
+	wbkgd(lowerContentWindow, COLOR_PAIR(2));
+	wbkgd(centerContentWindow, COLOR_PAIR(5));
+	wbkgd(upperContentWindow, COLOR_PAIR(2));
 
 	wshadowBorder(mainWindow, COLOR_PAIR(4), COLOR_PAIR(2));
+	wshadowBorder(lowerWindow, COLOR_PAIR(2), COLOR_PAIR(4));
 	wshadowBorder(centerWindow, COLOR_PAIR(2), COLOR_PAIR(4));
-	wshadowBorder(titleWindow, COLOR_PAIR(2), COLOR_PAIR(4));
-	wshadowBorder(scoreWindow, COLOR_PAIR(2), COLOR_PAIR(4));
+	wshadowBorder(upperWindow, COLOR_PAIR(2), COLOR_PAIR(4));
+	
+/*	----------------------------------	*/
+
+	char title[] = "CSnake";
+	wattron(upperContentWindow, A_BOLD);
+	mvwaddstr(upperContentWindow, 0, (20 - BORDERWIDTH - strlen(title)) / 2, title);
+	wattroff(upperContentWindow, A_BOLD);
+
+/*	----------------------------------	*/
 
 	refresh();
 	wrefresh(shadowWindow);
 	wrefresh(mainWindow);
-	wrefresh(titleWindow);
-	wrefresh(scoreWindow);
+	wrefresh(lowerWindow);
+	wrefresh(centerWindow);
+	wrefresh(upperWindow);
 
-	return playgroundWindow;
+	*lower = lowerContentWindow;
+	*center = centerContentWindow;
+	*upper = upperContentWindow;
 }

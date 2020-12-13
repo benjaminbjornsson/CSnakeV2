@@ -12,9 +12,9 @@ struct Playground {
 	Snake *snake;
 	Apple *apple;
 	Wall *wall;
-	int (* runGame)(Playground *);
+	int score;
+	int (* stepGame)(Playground *, int);
 };
 
 Playground *initPlayground(WINDOW *, Coordinate, int);
-int getLastKey(Playground *);
-int runGame(Playground *);
+int stepGame(Playground *, int);

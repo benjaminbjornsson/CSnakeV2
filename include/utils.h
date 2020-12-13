@@ -9,6 +9,7 @@
 #define WIDTH	80
 
 #define COLOR_GREY	8
+#define COLOR_LIGHTGREY	9
 
 typedef struct Range Range; 
 typedef struct Coordinate Coordinate; 
@@ -30,7 +31,9 @@ bool inRange(Range, int);
 
 bool coordinateCompair(Coordinate, Coordinate);
 
+int getLastKey(WINDOW *window);
+
 void wshadowBorder(WINDOW *, short, short);
-WINDOW *initPlaygroundWindow();
+void initWindows(WINDOW **, WINDOW **, WINDOW **, int, int, Coordinate);
 
 #endif
