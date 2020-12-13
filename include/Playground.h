@@ -15,6 +15,6 @@ struct Playground {
 	int (* runGame)(Playground *);
 };
 
-Playground *initPlayground(int, int, Coordinate, int);
+Playground *initPlayground(WINDOW *, Coordinate, int);
 int getLastKey(Playground *);
 int runGame(Playground *);

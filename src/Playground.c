@@ -1,18 +1,10 @@
 #include "Playground.h" 
-		
-Playground *initPlayground(int rows, int columns, Coordinate start, int len) {
+
+Playground *initPlayground(WINDOW *window, Coordinate start, int len) {
 	Playground *temp;
 	temp = (Playground *)malloc(sizeof(Playground));
-
-	temp->rows = rows;
-	temp->columns = 2 * columns;
-
-	temp->win = newwin(rows, temp->columns, 0, 0);
-	if(temp->win == NULL)
-		return NULL;
-	init_pair(1, COLOR_WHITE, COLOR_BLUE);
-	wbkgd(temp->win, COLOR_PAIR(1));
-
+	getmaxyx(window, temp->rows, temp->columns);
+	temp->win = window;
 	temp->snake = initSnake(start, len);
 	temp->apple = NULL;
 
