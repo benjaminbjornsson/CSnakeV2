@@ -56,16 +56,16 @@ Coordinate nextCoordinate(const Snake *snake, const int maxrow, const int maxcol
 
 void updateSnakeDirection(Snake *snake, int ch) {
     switch(ch) {
-        case 'h':
+        case left:
             if(snake->prev_direction != right) { snake->direction = left; }
             break;
-        case 'j':
+        case down:
             if(snake->prev_direction != up) { snake->direction = down; }
             break;
-        case 'k':
+        case up:
             if(snake->prev_direction != down) { snake->direction = up; }
             break;
-        case 'l':
+        case right:
             if(snake->prev_direction != left) { snake->direction = right; }
             break;
         default:
@@ -78,6 +78,7 @@ void deleteTail(Snake *snake) {
 	stepper = snake->head;
 	while((stepper->next)->next != NULL)
 		stepper = stepper->next;
+
 	free(stepper->next);
 	stepper->next = NULL;
 }

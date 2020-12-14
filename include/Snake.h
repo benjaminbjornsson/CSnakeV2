@@ -8,9 +8,9 @@ typedef struct SnakeBody SnakeBody;
 typedef struct Snake Snake;
 
 enum Direction {
-	left = 'h', 
-	down = 'j', 
-	up = 'k', 
+	left = 'j', 
+	down = 'k', 
+	up = 'i', 
 	right = 'l'
 };
 
@@ -22,7 +22,6 @@ struct SnakeBody {
 struct Snake {
 	Direction prev_direction, direction;
 	SnakeBody *head;
-/*	bool (* intersectSnake)(Snake *, Coordinate);*/
 };
 
 Snake *initSnake(Coordinate, int);
