@@ -75,7 +75,7 @@ bool mainMenu(WINDOW *window, WINDOW *stats, Playground *playground) {
 	int ch = 0;
 	do {
 		switch(ch) {
-			case 'h':
+			case left:
 				if(isSelected && hoover == levelBar) {
 					*level = *level > 1 ? *level - 1 : *level;
 					updateScore(stats, playground->score, playground->levels[playground->level]->highscore, playground->level);
@@ -85,7 +85,7 @@ bool mainMenu(WINDOW *window, WINDOW *stats, Playground *playground) {
 				else
 					hoover = (hoover - 1 + 4) % 4;
 				break;
-			case 'l':
+			case right:
 				if(isSelected && hoover == levelBar) {
 					*level = *level < levels ? *level + 1 : *level;
 					updateScore(stats, playground->score, playground->levels[playground->level]->highscore, playground->level);
@@ -156,7 +156,7 @@ bool playMenu(Playground *playground) {
 
 	do {
 		switch(ch) {
-			case 'h': case 'l':
+			case left: case right:
 				hoover = !hoover;
 				break;
 			case ' ':
@@ -207,7 +207,7 @@ int main() {
 	Coordinate windowPosition = { .row = 1, .col = 2 };
 
 	WINDOW *lowerWindow, *centerWindow, *upperWindow;
-	initWindows(&lowerWindow, &centerWindow, &upperWindow, 21, 74, windowPosition);
+	initWindows(&lowerWindow, &centerWindow, &upperWindow, 21, 75, windowPosition);
 
 	if(lowerWindow == NULL || centerWindow == NULL || upperWindow == NULL) {
 		endwin();

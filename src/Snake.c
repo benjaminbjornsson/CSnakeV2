@@ -48,6 +48,7 @@ Coordinate nextCoordinate(const Snake *snake, const int maxrow, const int maxcol
 	switch(snake->direction) {
 		case left:
 			temp.col = (temp.col + maxcol - 2) % maxcol;
+			temp.col = temp.col + temp.col % 2;
 			return temp;
 		case down:
 			temp.row = ++temp.row % maxrow;
@@ -57,6 +58,7 @@ Coordinate nextCoordinate(const Snake *snake, const int maxrow, const int maxcol
 			return temp;
 		case right:
 			temp.col = (temp.col + 2) % maxcol;
+			temp.col = temp.col == 1 ? 0 : temp.col;
 			return temp;
 	}
 }
