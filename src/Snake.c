@@ -1,24 +1,31 @@
 #include "Snake.h"
 
-Snake *initSnake(Coordinate start, int len) {
+enum Direction initDirection(SnakeBody *head) {
+	if(head->position.row != head->next->position.row)
+		return (head->position.row - head->next->position.row) > 0 ? up : down;
+	else
+		return (head->position.col - head->next->position.col > 0) ? right : left;
+}
+
+Snake *initSnake(Coordinate **initialSnake) {
 	Snake *snake = (Snake *)malloc(sizeof(Snake));
 	SnakeBody *stepper;
 
-	snake->direction = snake->prev_direction = right;
 	snake->head = (SnakeBody *)malloc(sizeof(SnakeBody));
 	
 	stepper = snake->head;
-	stepper->position.row = start.row;
-	stepper->position.col = start.col;
-
-	int i;
-	for(i = 1; i < len; i++) {
+	
+	while(*initialSnake != NULL) {
+		stepper->position.row = (*initialSnake)->row;
+		stepper->position.col = (*initialSnake)->col;
 		stepper->next = (SnakeBody *)malloc(sizeof(SnakeBody));
 		stepper = stepper->next;
-		stepper->position.row = start.row;
-		stepper->position.col = start.col - 2 * i;
+		initialSnake++;
 	}
-	stepper = NULL;
+
+	snake->direction = snake->prev_direction = initDirection(snake->head);
+
+	stepper->next = NULL;
 
 	return snake;
 }

@@ -24,7 +24,7 @@ struct Snake {
 	SnakeBody *head;
 };
 
-Snake *initSnake(Coordinate, int);
+Snake *initSnake(Coordinate **);
 void wdrawSnake(WINDOW *, const Snake *);
 void updateSnakeDirection(Snake *, int);
 bool stepSnake(Snake *, bool, int, int);
